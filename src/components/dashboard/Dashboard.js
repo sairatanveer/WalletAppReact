@@ -1,9 +1,46 @@
 import React, { Component } from 'react'
 import DashboardItem from './DashboardItem'
+import {Link} from 'react-router-dom'
+import {connect} from 'react-redux'
+import {getWallets} from '../../actions/projectAction'
+
 
  class Dashboard extends Component {
+     constructor(props) {
+         super(props)
+     
+         this.state = {
+              totalBalance:0.0
+         }
+     }
+     
+
+componentWillReceiveProps(nextProps)
+{
+    if(nextProps.wallets){
+        let totalBalance=0
+        for(let i=0;i<nextProps.wallets.length;i++)
+        {
+            totalBal=totalBal+nextProps.wallets[i].currentBalance
+        }
+     
+        this.setState({totalBalance:totalBal})
+    }
+}
+
+componentDidMount()
+{
+    this.props.getWallets()
+}
+
     render() {
-        return (
+        const wallets=this.props.Wallets
+const walletComponent = Wallets.map(wallet=>(<DashboardItem key={wallet.id} wallet={Wallet}/>))
+        if(walletComponent.length==0)
+        {
+            <div className="alert alert-info">No Wallet Found</div>
+        }
+            return (
             <div className="projects">
             <div className="container">
                 <div className="row">
@@ -23,13 +60,13 @@ import DashboardItem from './DashboardItem'
                         <div className="card text-center">
                             <div className="card-header bg-success text-white">
                                 <h4>Current Balance (Total)</h4>
-                                <h1>Rs. 27000</h1>
+                                <h1>Rs. {this.state.totalBalance}</h1>
                             </div>
                         </div>
                         <hr />
     
-               <DashboardItem/>
-               <DashboardItem/>
+               {walletComponent}
+              
 
                      
                     </div>
@@ -40,4 +77,8 @@ import DashboardItem from './DashboardItem'
     }
 }
 
-export default Dashboard
+const mapStateToProps = (state)=>({
+    Wallet:state.Wallet.Wallets
+});
+
+export default connect(mapStateToProps,{getWallets}) (Dashboard)
